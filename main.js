@@ -1,9 +1,12 @@
 /*
  * 
- *  Basic WebServer!
+ *  Jist.js
+ *  A Webserver for Node.js
+ *  
+ *  (c)owenhaynes.com 2012
  * 
  */
-var rh = require('./webserver/RequestHandler.js');
+var rh = require('./core/RequestHandler.js');
 
 var http = require('http');
 

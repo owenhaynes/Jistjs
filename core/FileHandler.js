@@ -1,5 +1,10 @@
-/* 
- * Handles File Requests On the Server
+/*
+ * 
+ *  Jist.js
+ *  A Webserver for Node.js
+ *  
+ *  (c)owenhaynes.com 2012
+ * 
  */
 
 var MimeTypes = require('./MimeTypes.js');
@@ -14,11 +19,11 @@ var generateDirIndex = function(localpath, relativePath, callback){
             var filesList = '';
             for(var i=0; i<files.length; ++i)
                 filesList += '<a href="' + relativePath + files[i] + '">'+files[i]+'</a><br />'
-            readFile('./webserver/staticfiles/dirIndex.html',function(error,mimeType,data){
-                data = data.toString();
-                data = data.replace('{dirName}', relativePath);
-                data = data.replace('{fileList}',filesList);
-                callback(false,mimeType,data);
+            readFile('./core/static/dirIndex.html',function(error,mimeType,data){
+            data = data.toString();
+            data = data.replace('{dirName}', relativePath);
+            data = data.replace('{fileList}',filesList);
+            callback(false,mimeType,data);
             });
         }else{
             callback(true);
@@ -67,15 +72,25 @@ exports.FileHandler = function(request,response,callback){
            }
         });  
     }else{
-        nPATH.exists(localPath,function(exists){
-            if(exists){
-                readFile(localPath,function(error,mimeType,data){
-                    callback(error,mimeType,data);
-                });
-            }else{
-                callback(true);
-            }
-        });
+        //Check the path for static resources
+        var staticFile = new RegExp('^/_static');
+        var match = url.path.match(staticFile);
+        if(match != null){
+            var p = url.path.replace('/_static','./core/static');
+            readFile(p,function(error,mimeType,data){
+                callback(error,mimeType,data);
+            });
+        }else{
+            nPATH.exists(localPath,function(exists){
+                if(exists){
+                    readFile(localPath,function(error,mimeType,data){
+                        callback(error,mimeType,data);
+                    });
+                }else{
+                    callback(true);
+                }
+            });
+        }
     }
 };
 
